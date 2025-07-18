@@ -5,6 +5,7 @@ export type ProspectoRucRequest = {
   trade_name?: string;
   address: string;
   economic_activity?: string;
+  activity_start_date: string;
   registration_date?: string;
   email?: string;
   website?: string;
@@ -23,6 +24,7 @@ export type ProspectoRucRequest = {
 export type ProspectoResource = {
   id: number;
   ruc: string;
+  tipo: string;
   business_name: string;
   trade_name: string | null;
   address: string;
@@ -46,6 +48,7 @@ export type ProspectoResource = {
 
 export type ProspectoDniRequest = {
   dni: string; //tony
+  tipo: string;
   activity_start_date: string | null;
   sales_executive: string;
   nombre: string; //tony
@@ -61,6 +64,7 @@ export type ProspectoDniRequest = {
 
 export type ProspectoCeRequest = {
   ce: string; //tony
+  tipo: string;
   activity_start_date: string | null;
   sales_executive: string;
   nombre: string; //tony
@@ -76,6 +80,7 @@ export type ProspectoCeRequest = {
 
 export type ProspectoDniResource = {
   dni: string; //tony
+  tipo: string;
   activity_start_date: string | null;
   sales_executive: string;
   nombre: string; //tony

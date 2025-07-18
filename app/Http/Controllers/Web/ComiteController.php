@@ -52,7 +52,7 @@ class ComiteController extends Controller {
         $prospecto = Supplier::findOrFail($id);
         $prospecto->update($data);
         return response()->json([
-            'message' => 'Prospecto updated successfully',
+            'message' => 'Prospecto actualizado correctamente.',
             'data' => 'ok'
         ], 201);
     }

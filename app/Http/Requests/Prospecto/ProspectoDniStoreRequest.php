@@ -15,6 +15,7 @@ class ProspectoDniStoreRequest extends FormRequest
     {
         return [
             'dni' => ['nullable'], //tony
+            'tipo' => ['nullable', 'string'], //tony
             'activity_start_date' => ['nullable'], 
             'sales_executive' => ['nullable'],
             'nombre' => ['nullable'], //tony

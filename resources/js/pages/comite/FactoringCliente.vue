@@ -4,7 +4,7 @@
     <div class="p-10 mt-[67px]">
 
       <div class="bg-purple-fincore rounded-t-xl p-5">
-        <h1 class="m-0 text-white text-3xl font-bold">Comité Factoring Cliente</h1>
+        <h1 class="m-0 text-white text-2xl font-bold">Comité Factoring Cliente</h1>
       </div>
       
       <div class="inset-ring inset-ring-gray-100 rounded-t-none rounded-b-xl p-5">
@@ -184,7 +184,7 @@
               <FormItem class="col-span-2">
                 <FormLabel class="block">Cuenta con Protestos</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField"  v-model="prospecto[0].cuenta_con_protestos" />
+                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" disabled v-model="prospecto[0].cuenta_con_protestos" />
                 </FormControl>
               </FormItem>
             </FormField>

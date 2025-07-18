@@ -3,20 +3,16 @@
 
           <form @submit.prevent="guardarProspecto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-          <p class="text-black-fincore text-sm mb-0">Selecciona el tipo de producto:</p>
-          <Select v-model="tipoProductoElegido">
-            <SelectTrigger className="w-full border border-gray-200 rounded-lg focus:border-gray-200 text-start h-[36px] py-[4px] px-3 mb-[20px] active:border-gray-200 col-span-1 md:col-span-2 lg:col-span-3">
-              <SelectValue placeholder="Tipo de producto"/>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Elige el tipo</SelectLabel>
-                <SelectItem v-for="item in tipoProducto" :key="item" :value="item" class="">
-                  {{ item }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            <div class="hidden">
+              <FormField name="tipo" v-slot="{ componentField }">
+                <FormItem>
+                  <FormLabel class="block">tipo</FormLabel>
+                  <FormControl>
+                    <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
+                  </FormControl>
+                </FormItem>
+              </FormField>
+            </div>
 
             <FormField class="" name="ce" v-slot="{ componentField }">
               <FormItem class="!hidden">
@@ -195,22 +191,16 @@
 
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { toast } from 'vue-sonner'
+import { useToast } from 'vue-toast-notification'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import axios from 'axios'
-import { ref } from 'vue'
-
-import {
-  Card, CardHeader, CardTitle, CardDescription, CardContent,
-} from '@/components/ui/card'
+import { ref, watch } from 'vue'
 import {
   FormField, FormItem, FormLabel, FormControl
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import type { ProspectoCeRequest, ProspectoCreateResponse } from '@/types/prospecto'
 
@@ -224,38 +214,28 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UploadCloud } from 'lucide-vue-next'
-import Ruc from './components/ruc.vue'
-import Dni from './components/dni.vue'
 
 const breadcrumbs = [
   { title: 'Prospecto', href: '/prospecto' },
 ]
+const toast = useToast()
 
 // Estados de carga
 const consultandoRuc = ref(false)
 const guardando = ref(false)
 
-const tipoDocumentoElegido = ref('')
-const tipoDocumento = ref(
-  ['DNI', 'RUC', 'Carnet Extranjería']
-)
-const tipoProducto = ref(
+/*const tipoProducto = ref(
   ['Factoring', 'Confirming']
 )
 const tipoProductoElegido = ref('')
+watch(tipoProductoElegido, (val) => {
+  setFieldValue('tipo', val)
+})*/
 const name = ref('')
 
 const formSchema = toTypedSchema(z.object({
-  /* ruc: z.string().length(11, 'RUC debe tener 11 dígitos'),
-  business_name: z.string().min(1, 'Requerido'),
-  trade_name: z.string().optional(),
-  economic_activity: z.string().optional(),
-  website: z.string().url('URL inválida').optional().or(z.literal('')),
-  contact_person: z.string().optional(),
-  position: z.string().optional(),
-  notes: z.string().optional(), */
-
   ce: z.string().optional(), //tony
+  tipo: z.string().min(1, 'Requerido'), //tony
   activity_start_date: z.string().optional(),
   sales_executive: z.string().min(1, 'Requerido'),
   nombre: z.string().optional(), //tony
@@ -267,13 +247,13 @@ const formSchema = toTypedSchema(z.object({
   commission: z.coerce.number().optional(),
   email: z.string().email('Correo inválido').optional().or(z.literal('')),
   numero_movil: z.string().optional(), //tony
-  //ce: z.string().optional(), //tony
 }))
 
 const { handleSubmit, resetForm, values, setFieldValue, setFieldError } = useForm<ProspectoCeRequest>({
   validationSchema: formSchema,
   initialValues: {
-    ce: '123456789acbasdf', //tony
+    ce: '123456789acbasdfa', //tony
+    tipo: 'Factoring', //tony
     activity_start_date: '',
     sales_executive: '',
     nombre: '', //tony
@@ -354,6 +334,87 @@ const consultarRuc = async () => {
   }
 }
 
+const consultarDni = async () => {
+  
+  if (!values.dni || values.dni.length !== 8) {
+    toast.error('El DNI debe tener 8 dígitos')
+    return
+  }
+
+  if (!/^\d{8}$/.test(values.dni)) {
+    toast.error('El DNI debe contener solo números')
+    return
+  }
+  consultandoDni.value = true
+  try {
+    
+    const { data } = await axios.get(`/api/consultas/consultar-dni/${values.dni}`)
+
+    
+
+    if (!data || Object.keys(data).length === 0) {
+      toast.error('DNI no encontrado o no existe')
+      return
+    }
+
+    if (data.estado && data.estado.toLowerCase() === 'inactivo') {
+      toast.warning('El DNI está inactivo')
+    }
+
+    /*if (!data.razonSocial && !data.tipo && !data.direccion) {
+      toast.error('No se encontró información para este DNI')
+      return
+    }*/
+    if (data.data.direccion) {
+      setFieldValue('nombre',`${data.data.nombres} ${data.data.apellido_materno} ${data.data.apellido_paterno}`)
+    }
+    if (data.data.direccion) {
+      setFieldValue('address', data.data.direccion)
+    }
+    console.log(data.data)
+    if (data.data.fecha_nacimiento) {
+      const [dia, mes, anio] = data.data.fecha_nacimiento.split('/');
+      if (dia && mes && anio) {
+      const fecha = new Date(`${anio}-${mes}-${dia}`);
+      if (!isNaN(fecha.getTime())) {
+          const fechaNacimiento = fecha.toISOString().split('T')[0];
+          setFieldValue('fecha_nacimiento', fechaNacimiento);
+        } else {
+          console.warn('Fecha inválida:', data.data.fecha_nacimiento);
+          setFieldValue('fecha_nacimiento', '');
+        }
+      } else {
+        console.warn('Formato de fecha incorrecto:', data.data.fecha_nacimiento);
+        setFieldValue('fecha_nacimiento', '');
+      }
+    }
+    if (data.data.sexo) {
+      setFieldValue('sexo', data.data.sexo)
+    }
+    if (data.data.estado_civil) {
+      setFieldValue('estado_civil', data.data.estado_civil)
+    }
+
+    toast.success('Datos del DNI cargados correctamente')
+  } catch (err: any) {
+    console.error('Error al consultar DNI:', err)
+
+    if (err?.response?.status === 404) {
+      toast.error('DNI no encontrado')
+    } else if (err?.response?.status === 429) {
+      toast.error('Demasiadas consultas. Intente más tarde')
+    } else if (err?.response?.status === 500) {
+      toast.error('Error del servidor. Intente más tarde')
+    } else if (err?.code === 'NETWORK_ERROR' || !navigator.onLine) {
+      toast.error('Error de conexión. Verifique su internet')
+    } else {
+      toast.error(err?.response?.data?.message || 'Error al consultar el DNI')
+    }
+  } finally {
+    consultandoDni.value = false
+  }
+}
+
 const idProspecto = ref(0)
 const botonSubirReporte = ref(false)
 const botonAceptante = ref(false)
@@ -368,8 +429,6 @@ const guardarProspecto = handleSubmit(async (formData) => {
       toast.success(res.data.message || 'Prospecto guardado exitosamente')
       idProspecto.value = res.data.id
       botonSubirReporte.value = true
-      //botonAceptante.value = true
-      //router.visit(`/prospectos/prospecto/reporte/${res.data.id}`)
     }
   } catch (err: any) {
     console.error('Error al guardar prospecto:', err)

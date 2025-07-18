@@ -19,7 +19,7 @@ class ProspectoController extends Controller {
 
     public function index() {
         return Inertia::render('prospecto/Index', [
-            'prospectos' => Supplier::all()
+            'prospectos' => Supplier::whereIn('tipo', ['Confirming', 'Factoring'])->get()
         ]);
     }
 
@@ -28,17 +28,19 @@ class ProspectoController extends Controller {
     }
 
     public function reporte(int $id) {
+        $prospecto = DB::table('suppliers')->where('id', $id)->first();
         return Inertia::render('prospecto/Reporte', [
             'id' => $id,
+            'prospecto' => $prospecto,
         ]);
     }
 
     public function guardarRuc(ProspectoRucStoreRequest $request){
         $data = $request->validated();
-        $data['tipo_documento'] = 'ruc'; 
+        $data['tipo_documento'] = 'ruc';
         $id = DB::table('suppliers')->insertGetId($data);
         return response()->json([
-            'message' => 'Prospecto created successfully',
+            'message' => 'Prospecto creado correctamente.',
             'id' => $id,
         ], 201);
     }
@@ -48,7 +50,7 @@ class ProspectoController extends Controller {
         $data['tipo_documento'] = 'dni';
         $id = DB::table('suppliers')->insertGetId($data);
         return response()->json([
-            'message' => 'Prospecto created successfully',
+            'message' => 'Prospecto creado correctamente.',
             'id' => $id,
         ], 201);
     }
@@ -57,8 +59,8 @@ class ProspectoController extends Controller {
         $data['tipo_documento'] = 'ce';
         $id = DB::table('suppliers')->insertGetId($data);
         return response()->json([
-            'message' => 'Prospecto created successfully',
-            'data' => $id,
+            'message' => 'Prospecto creado correctamente.',
+            'id' => $id,
         ], 201);
     }
 
@@ -66,7 +68,7 @@ class ProspectoController extends Controller {
         $data = $request->validated();
         $response = SunatReport::create($data);
         return response()->json([
-            'message' => 'SunatReport created successfully',
+            'message' => 'SunatReport creado correctamente.',
             'data' => $response,
         ], 201);
     }
@@ -86,9 +88,13 @@ class ProspectoController extends Controller {
         $data['id_factoring'] = $id;
         $data['tipo'] = 'Factoring Aceptante';
         $id_aceptante = DB::table('suppliers')->insertGetId($data);
+        Log::debug('$id');
+        Log::debug($id);
+        Log::debug('$id_aceptante');
+        Log::debug($id_aceptante);
         //$response = DB::table('suppliers')->where('id', $id)->update(['id_factoring' => $id_aceptante]);
         return response()->json([
-            'message' => 'Aceptante saved successfully',
+            'message' => 'Aceptante guardado correctamente.',
             'id' => $id
         ], 201);
     }

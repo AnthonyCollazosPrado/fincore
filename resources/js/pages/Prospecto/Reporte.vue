@@ -5,7 +5,7 @@
     <div class="flex h-full flex-1 flex-col rounded-xl p-10 mt-[67px]">
 
       <div class="bg-purple-fincore rounded-t-xl p-5">
-        <h1 class="m-0 text-white text-3xl font-bold">Registro de Reporte Tributario</h1>
+        <h1 class="m-0 text-white text-2xl font-bold">Registro de Reporte Tributario</h1>
       </div>
 
         <div class="flex">
@@ -435,10 +435,9 @@
 									<Button type="button" :disabled="guardando" class="bg-skyblue-fincore" @click="guardarReporte">
 										{{ guardando ? 'Navegando...' : 'Guardar Reporte Tributario' }}
 									</Button>
-									
-									<Button v-if="botonAceptante" type="button" class="ms-5 bg-skyblue-fincore" @click="router.visit(`/prospectos/prospecto/aceptante/${id}`)">
-										{{ guardando ? 'Guardando...' : 'Aceptante' }}
-									</Button>
+                            <Button v-if="botonAceptante" type="button" class="ms-5 bg-skyblue-fincore" @click="router.visit(`/prospectos/prospecto/aceptante/${id}`)">
+                                {{ guardando ? 'Guardando...' : 'Aceptante' }}
+                            </Button>
                 </div>
             </div>
 
@@ -475,6 +474,7 @@ import {
     SelectItem
 } from '@/components/ui/select'
 import { Pagination } from '@/components/ui/pagination'
+import { useToast } from 'vue-toast-notification'
 
 // Breadcrumbs
 const breadcrumbs = [
@@ -482,9 +482,12 @@ const breadcrumbs = [
   { title: 'Prospecto', href: '/prospectos/prospecto' },
   { title: 'Reporte Tributario', href: '/prospectos/prospecto/reporte' },
 ]
+const toast = useToast()
+
 const guardando = ref(false)
 const page = usePage()
 const id = ref(page.props.id ?? [])
+const prospecto = ref(page.props.prospecto ?? [])
 
 // Estados
 const isUploading = ref(false)
@@ -605,9 +608,13 @@ const guardarReporte = async () =>  {
         })
 
         if (res.status === 200 || res.status === 201) {
-            //toast.success(res.data.message || 'Prospecto guardado exitosamente')
+            toast.success(res.data.message || 'Reporte Tributario guardado exitosamente')
             //router.visit('/prospectos')
-						botonAceptante.value = true
+            if (prospecto.value.tipo == 'Factoring') {
+			    botonAceptante.value = true
+            } else {
+                router.visit('/prospectos')
+            }
         }
     } catch (err: any) {
         console.error('Error al guardar reporte:', err)
@@ -648,6 +655,8 @@ const handleFileUpload = async (event: Event) => {
 
         pdfData.value = response.data
         currentPage.value = 1
+
+        toast.success('Datos subidos exitosamente')
     } catch (error) {
         console.error('Error al procesar el archivo:', error)
         errorMessage.value = error.response?.data?.message || 'Error al procesar el archivo PDF'

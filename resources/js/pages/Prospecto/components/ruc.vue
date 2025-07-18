@@ -1,46 +1,16 @@
 <template>
     <form @submit.prevent="guardarProspecto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          
 
-          <!-- <p class="text-black-fincore text-sm mb-0">Selecciona el tipo de producto:</p>
-          <Select v-model="tipoProductoElegido">
-            <FormField name="tipo">
-              <SelectTrigger className="w-full border border-gray-200 rounded-lg focus:border-gray-200 text-start h-[36px] py-[4px] px-3 mb-[20px] active:border-gray-200 col-span-1 md:col-span-2 lg:col-span-3">
-                <SelectValue placeholder="Tipo de producto"/>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Elige el tipo</SelectLabel>
-                  <SelectItem v-for="item in tipoProducto" :key="item" :value="item" class="">
-                    {{ item }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </FormField>
-          </Select> -->
-          <FormField name="tipo" v-slot="{ componentField }">
-            <FormItem class="col-span-1 md:col-span-2 lg:col-span-3">
-              <FormLabel class="block">Selecciona el tipo de producto:</FormLabel>
-              <FormControl>
-                <Select v-model="tipoProductoElegido">
-                  <SelectTrigger className="w-full border border-gray-200 rounded-lg text-start h-[36px] py-[4px] px-3 mb-[20px] active:border-gray-200">
-                    <SelectValue placeholder="Tipo de producto"/>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Elige el tipo</SelectLabel>
-                      <SelectItem v-for="item in tipoProducto" :key="item" :value="item">
-                        {{ item }}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <p v-if="componentField.errorMessage" class="text-red-600 text-sm mt-1">
-                {{ componentField.errorMessage }}
-              </p>
-            </FormItem>
-          </FormField>
+            <div class="hidden">
+              <FormField name="tipo" v-slot="{ componentField }">
+                <FormItem>
+                  <FormLabel class="block">tipo</FormLabel>
+                  <FormControl>
+                    <Input class="w-full shadow-none rounded-lg border-gray-200" :model-value="props.tipoValue"  v-bind="componentField" />
+                  </FormControl>
+                </FormItem>
+              </FormField>
+            </div>
 
             <FormField name="ruc" v-slot="{ componentField }">
               <FormItem>
@@ -162,7 +132,10 @@
               <FormItem>
                 <FormLabel class="block">Tasa Esperada (%)</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
+                  <div class="relative">
+                    <Input class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
+                    <span class="absolute inset-y-0 right-8 flex items-center text-gray-400 text-sm">%</span>
+                  </div>
                 </FormControl>
               </FormItem>
             </FormField>
@@ -171,7 +144,7 @@
               <FormItem>
                 <FormLabel class="block">Comisión (%)</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
+                  <Input v-model="commissionFormatted" class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -184,10 +157,17 @@
 
             <FormField name="dni" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel class="block">DNI</FormLabel>
+                <FormLabel class="block">DNI<span class="text-red-600">*</span></FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
+                  <Input id="dni" v-bind="componentField" @blur="consultarDni" @keyup.enter="consultarDni"
+                    class="w-full shadow-none rounded-lg border-gray-200" :disabled="consultandoDni" />
                 </FormControl>
+                <p v-if="componentField.errorMessage" class="text-red-600 text-sm mt-1">
+                  {{ componentField.errorMessage }}
+                </p>
+                <p v-if="consultandoDni" class="text-blue-600 text-sm mt-1">
+                  Consultando DNI...
+                </p>
               </FormItem>
             </FormField>
 
@@ -196,7 +176,7 @@
               <FormItem>
                 <FormLabel class="block">Nombres y Apellidos</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
+                  <Input class="w-full shadow-none rounded-lg border-gray-200" disabled v-bind="componentField" />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -251,7 +231,8 @@
                 </p>
               </FormItem>
             </FormField>
-            
+
+          
             
             
             <FormField  name="notes" v-slot="{ componentField }">
@@ -262,6 +243,7 @@
                 </FormControl>
               </FormItem>
             </FormField>
+
 
             <!-- Botones -->
             <div class="col-span-1 md:col-span-2 lg:col-span-3 mt-3 text-center">
@@ -279,59 +261,77 @@
             </div>
           </form>
 
-
 </template>
 
 <script setup lang="ts">
 import {  router } from '@inertiajs/vue3'
-import { toast } from 'vue-sonner'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import axios from 'axios'
-import { ref } from 'vue'
-
+import { computed, onMounted, ref, watch } from 'vue'
 import {
   FormField, FormItem, FormLabel, FormControl
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-//import type { ProspectoRequest, ProspectoCreateResponse } from '@/prospecto/types/prospecto'
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { UploadCloud } from 'lucide-vue-next'
 import type { ProspectoRucRequest, ProspectoCreateResponse } from '../types/prospecto'
+import { useToast } from 'vue-toast-notification'
 
 const breadcrumbs = [
   { title: 'Prospecto', href: '/prospecto' },
 ]
+const toast = useToast()
 
 // Estados de carga
 const consultandoRuc = ref(false)
+const consultandoDni = ref(false)
 const guardando = ref(false)
 
-const tipoDocumentoElegido = ref('')
-const tipoDocumento = ref(
-  ['DNI', 'RUC', 'Carnet Extranjería']
-)
-const tipoProducto = ref(
-  ['Factoring', 'Confirming']
-)
-const tipoProductoElegido = ref('')
-const name = ref('')
+const props = defineProps<{
+  tipoValue: string
+}>()
+
+onMounted(() => {
+  if (props.tipoValue) {
+    setFieldValue('tipo', props.tipoValue)
+  }
+})
+watch(() => props.tipoValue, (nuevoTipo) => {
+  if (nuevoTipo) {
+    setFieldValue('tipo', nuevoTipo)
+  }
+})
+/*
+const commission = ref<number | null>(null)
+const commissionFormatted = computed({
+  get() {
+    if (commission.value === null || commission.value === undefined) return ''
+    return new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: 'PEN',
+      minimumFractionDigits: 2
+    }).format(commission.value)
+  },
+  set(value: string) {
+    const cleaned = value.replace(/[^\d.-]/g, '')
+    commission.value = parseFloat(cleaned) || null
+  }
+})
+
+
+const formatMoney = (amount) => {
+    if (!amount) return '0.00'
+    return new Intl.NumberFormat('es-PE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount)
+}*/
 
 const formSchema = toTypedSchema(z.object({
-  tipo: z.string(),
   ruc: z.string().length(11, 'RUC debe tener 11 dígitos'),
+  tipo: z.string(), //tony
   business_name: z.string().min(1, 'Requerido'),
   trade_name: z.string().optional(),
   address: z.string().min(1, 'Requerido'),
@@ -345,7 +345,6 @@ const formSchema = toTypedSchema(z.object({
   expected_rate: z.coerce.number().optional(),
   commission: z.coerce.number().optional(),
   notes: z.string().optional(),
-
   dni: z.string().optional(), //tony
   nombre: z.string().optional(), //tony
   numero_movil: z.string().optional(), //tony
@@ -355,7 +354,7 @@ const { handleSubmit, resetForm, values, setFieldValue, setFieldError } = useFor
   validationSchema: formSchema,
   initialValues: {
     ruc: '',
-    tipo: '',
+    tipo: '', //tony
     business_name: '',
     trade_name: '',
     address: '',
@@ -369,7 +368,6 @@ const { handleSubmit, resetForm, values, setFieldValue, setFieldError } = useFor
     expected_rate: 0,
     commission: 0,
     notes: '',
-
     dni: '', //tony
     nombre: '', //tony
     numero_movil: '', //tony
@@ -442,6 +440,88 @@ const consultarRuc = async () => {
   }
 }
 
+
+const consultarDni = async () => {
+  
+  if (!values.dni || values.dni.length !== 8) {
+    toast.error('El DNI debe tener 8 dígitos')
+    return
+  }
+
+  if (!/^\d{8}$/.test(values.dni)) {
+    toast.error('El DNI debe contener solo números')
+    return
+  }
+
+  consultandoDni.value = true
+
+  try {
+    
+    const { data } = await axios.get(`/api/consultas/consultar-dni/${values.dni}`)
+
+    if (!data || Object.keys(data).length === 0) {
+      toast.error('DNI no encontrado o no existe')
+      return
+    }
+
+    if (data.estado && data.estado.toLowerCase() === 'inactivo') {
+      toast.warning('El DNI está inactivo')
+    }
+
+    /*if (!data.razonSocial && !data.tipo && !data.direccion) {
+      toast.error('No se encontró información para este DNI')
+      return
+    }*/
+    if (data.data.direccion) {
+      setFieldValue('nombre',`${data.data.nombres} ${data.data.apellido_materno} ${data.data.apellido_paterno}`)
+    }
+    if (data.data.direccion) {
+      setFieldValue('address', data.data.direccion)
+    }
+    console.log(data.data)
+    if (data.data.fecha_nacimiento) {
+      const [dia, mes, anio] = data.data.fecha_nacimiento.split('/');
+      if (dia && mes && anio) {
+      const fecha = new Date(`${anio}-${mes}-${dia}`);
+      if (!isNaN(fecha.getTime())) {
+          const fechaNacimiento = fecha.toISOString().split('T')[0];
+          setFieldValue('fecha_nacimiento', fechaNacimiento);
+        } else {
+          console.warn('Fecha inválida:', data.data.fecha_nacimiento);
+          setFieldValue('fecha_nacimiento', '');
+        }
+      } else {
+        console.warn('Formato de fecha incorrecto:', data.data.fecha_nacimiento);
+        setFieldValue('fecha_nacimiento', '');
+      }
+    }
+    if (data.data.sexo) {
+      setFieldValue('sexo', data.data.sexo)
+    }
+    if (data.data.estado_civil) {
+      setFieldValue('estado_civil', data.data.estado_civil)
+    }
+
+    toast.success('Datos del DNI cargados correctamente')
+  } catch (err: any) {
+    console.error('Error al consultar DNI:', err)
+
+    if (err?.response?.status === 404) {
+      toast.error('DNI no encontrado')
+    } else if (err?.response?.status === 429) {
+      toast.error('Demasiadas consultas. Intente más tarde')
+    } else if (err?.response?.status === 500) {
+      toast.error('Error del servidor. Intente más tarde')
+    } else if (err?.code === 'NETWORK_ERROR' || !navigator.onLine) {
+      toast.error('Error de conexión. Verifique su internet')
+    } else {
+      toast.error(err?.response?.data?.message || 'Error al consultar el DNI')
+    }
+  } finally {
+    consultandoDni.value = false
+  }
+}
+
 const idProspecto = ref(0)
 const botonSubirReporte = ref(false)
 const botonAceptante = ref(false)
@@ -456,8 +536,6 @@ const guardarProspecto = handleSubmit(async (formData) => {
       toast.success(res.data.message || 'Prospecto guardado exitosamente')
       idProspecto.value = res.data.id
       botonSubirReporte.value = true
-      //botonAceptante.value = true
-      //router.visit(`/prospectos/prospecto/reporte/${res.data.id}`)
     }
   } catch (err: any) {
     console.error('Error al guardar prospecto:', err)

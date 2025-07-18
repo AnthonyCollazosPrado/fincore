@@ -6,7 +6,7 @@
       <div id="divParaCopiar" class="mt-10">
 
       <div class="bg-purple-fincore rounded-t-xl p-5">
-        <h1 class="m-0 text-white text-3xl font-bold inline-block">Nuevo Aceptante</h1>
+        <h1 class="m-0 text-white text-2xl font-bold inline-block">Nuevo Aceptante</h1>
       </div>
       
       <div class="inset-ring inset-ring-gray-100 rounded-t-none rounded-b-xl p-5">
@@ -84,7 +84,7 @@
               <FormItem class="col-span-2">
                 <FormLabel class="block">Protestos Si o No</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" v-model="cuenta_con_protestos" />
+                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" disabled v-model="cuenta_con_protestos" />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -175,99 +175,21 @@
             </FormField>
 
             <div class="col-span-2 md:col-span-4 lg:col-span-6 mt-3 text-center">
-              <Button type="button" :disabled="guardando" class="bg-skyblue-fincore" @click="actualizarProspecto">
+              <Button v-if="botonGuardar" type="button" :disabled="guardando" class="bg-skyblue-fincore" @click="actualizarProspecto">
                 {{ guardando ? 'Guardando...' : 'Guardar' }}
+              </Button> 
+
+              <Button v-if="botonAgregar" type="button" :disabled="guardando" class="ms-5 bg-skyblue-fincore" @click="router.visit(`/prospectos/prospecto/aceptante/${id}`)">
+                {{ guardando ? 'Guardando...' : 'Agregar Otro Aceptante' }}
+              </Button>
+              <Button v-if="botonVolver" type="button" :disabled="guardando" class="ms-5 bg-skyblue-fincore" @click="router.visit('/prospectos')">
+                {{ guardando ? 'Guardando...' : 'Volver a Prospectos' }}
               </Button>
             </div>
           </div>
         </div>
       </div>
     </div>
-        
-<!--
-      <div class="inset-ring inset-ring-gray-100 rounded-xl p-5 mt-10">
-
-	        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-
-            <div class="col-span-4">
-
-
-              <div class="border-b border-gray-100 py-3 col-span-1 md:col-span-2 lg:col-span-3 mb-4">
-                <h3 class="m-0 text-purple-fincore text-xl font-bold">Comentarios</h3>
-              </div>
-
-              <FormField name="comentarios_area_riesgos" v-slot="{ componentField }">
-                <FormItem class="col-span-2 md:col-span-4 lg:col-span-6 mb-4">
-                  <FormLabel class="block">Comentarios Área de Riesgos</FormLabel>
-                  <FormControl>
-                    <Textarea rows="4" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField"  v-model="comentarios_area_riesgos" />
-                  </FormControl>
-                </FormItem>
-              </FormField>
-              <FormField name="comentarios_area_comercial" v-slot="{ componentField }">
-                <FormItem class="col-span-2 md:col-span-4 lg:col-span-6 mb-4">
-                  <FormLabel class="block">Comentarios Área de Comercial</FormLabel>
-                  <FormControl>
-                    <Textarea rows="4" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField"  v-model="comentarios_area_comercial" />
-                  </FormControl>
-                </FormItem>
-              </FormField>
-              <FormField  name="comentarios_area_operaciones" v-slot="{ componentField }">
-                <FormItem class="col-span-2 md:col-span-4 lg:col-span-6 mb-4">
-                  <FormLabel class="block">Comentarios Área de Operaciones</FormLabel>
-                  <FormControl>
-                    <Textarea rows="4" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField"  v-model="comentarios_area_operaciones" />
-                  </FormControl>
-                </FormItem>
-              </FormField>
-              
-              <FormField  name="comentarios_area_operaciones" v-slot="{ componentField }">
-                <FormItem class="col-span-2 md:col-span-4 lg:col-span-6 mb-4">
-                  <FormLabel class="block">Comentarios Remite Respuesta</FormLabel>
-                  <FormControl>
-                    <Textarea rows="4" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField"  v-model="comentarios_area_operaciones" />
-                  </FormControl>
-                </FormItem>
-              </FormField>
-            </div>
-
-            <div class="col-span-2">
-
-              <div class="border-b border-gray-100 py-3 col-span-2 md:col-span-4 lg:col-span-6 mb-4">
-                <h3 class="m-0 text-purple-fincore text-xl font-bold">Parametros Sugeridos</h3>
-              </div>
-              <FormField name="linea_cliente_sugerido" v-slot="{ componentField }">
-                <FormItem class="col-span-2 mb-4">
-                  <FormLabel class="block">Línea Aceptante</FormLabel>
-                  <FormControl>
-                    <Input type="number" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" v-model="linea_cliente_sugerido" />
-                  </FormControl>
-                </FormItem>
-              </FormField>
-
-              <div class="border-b border-gray-100 py-3 col-span-2 md:col-span-4 lg:col-span-6 mb-4">
-                <h3 class="m-0 text-purple-fincore text-xl font-bold">Parametros Definitivos</h3>
-              </div>
-              <FormField name="linea_cliente_definitivo" v-slot="{ componentField }">
-                <FormItem class="col-span-2 mb-4">
-                  <FormLabel class="block">Línea Aceptante</FormLabel>
-                  <FormControl>
-                    <Input  type="number" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" v-model="linea_cliente_definitivo" />
-                  </FormControl>
-                </FormItem>
-              </FormField>
-            </div>
-          
-          -->
-
-
-
-
-
-
-
-
-
 
 
 
@@ -287,6 +209,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useRoute } from 'ziggy-js'
 import axios from 'axios'
 import { ChevronDown, ChevronUp } from 'lucide-vue-next'
+import { useToast } from 'vue-toast-notification'
 
 
 const breadcrumbs = [
@@ -294,6 +217,7 @@ const breadcrumbs = [
   { title: 'Prospecto', href: '/prospectos/prospecto' },
   { title: 'Aceptante', href: '/prospectos/prospecto/aceptante' },
 ]
+const toast = useToast()
 
 
 
@@ -328,38 +252,46 @@ const comentarios_area_comercial = ref()
 const linea_cliente_sugerido = ref()
 const linea_cliente_definitivo = ref()*/
 
-const actualizarProspecto = async () =>  {
-    try {
-        const res = await axios.post(`/api/prospecto/guardar-aceptante/${id.value}`, {
-          nombre: nombre.value,
-          business_name: business_name.value,
-          activity_start_date: activity_start_date.value,
-          fecha_sentinel: fecha_sentinel.value,
-          cliente_situacion_sf: cliente_situacion_sf.value,
-          endeudamiento_bancario: endeudamiento_bancario.value,
-          cuenta_con_protestos: cuenta_con_protestos.value,
-          protestos: protestos.value,
-          rl_nombre: rl_nombre.value,
-          situacion_sf: situacion_sf.value,
-          edad: edad.value,
-          top: top.value,
-          ventas_aproximadas: ventas_aproximadas.value,
-          website: website.value,
-          entidad_apefac: entidad_apefac.value,
-          endeudamiento_apefac: endeudamiento_apefac.value,
-          endeudamiento_pomedio_6_apefac: endeudamiento_pomedio_6_apefac.value,
-          /*comentarios_area_riesgos: comentarios_area_riesgos.value,
-          comentarios_area_comercial: comentarios_area_comercial.value,
-          linea_cliente_sugerido: linea_cliente_sugerido.value,
-          linea_cliente_definitivo: linea_cliente_definitivo.value,*/
-        })
+const botonGuardar = ref(true)
+const botonAgregar = ref(false)
+const botonVolver = ref(false)
 
-        if (res.status === 200 || res.status === 201) {
-          router.visit('/prospectos')
-        }
-    } catch (err: any) {
-        console.error('Error al guardar reporte:', err)
+const actualizarProspecto = async () =>  {
+  try {
+    const res = await axios.post(`/api/prospecto/guardar-aceptante/${id.value}`, {
+      nombre: nombre.value,
+      business_name: business_name.value,
+      activity_start_date: activity_start_date.value,
+      fecha_sentinel: fecha_sentinel.value,
+      cliente_situacion_sf: cliente_situacion_sf.value,
+      endeudamiento_bancario: endeudamiento_bancario.value,
+      cuenta_con_protestos: cuenta_con_protestos.value,
+      protestos: protestos.value,
+      rl_nombre: rl_nombre.value,
+      situacion_sf: situacion_sf.value,
+      edad: edad.value,
+      top: top.value,
+      ventas_aproximadas: ventas_aproximadas.value,
+      website: website.value,
+      entidad_apefac: entidad_apefac.value,
+      endeudamiento_apefac: endeudamiento_apefac.value,
+      endeudamiento_pomedio_6_apefac: endeudamiento_pomedio_6_apefac.value,
+      /*comentarios_area_riesgos: comentarios_area_riesgos.value,
+      comentarios_area_comercial: comentarios_area_comercial.value,
+      linea_cliente_sugerido: linea_cliente_sugerido.value,
+      linea_cliente_definitivo: linea_cliente_definitivo.value,*/
+    })
+
+    if (res.status === 200 || res.status === 201) {
+      //router.visit('/prospectos')
+      botonGuardar.value = false
+      botonAgregar.value = true
+      botonVolver.value = true
+      toast.success(res.data.message || 'Aceptante guardado exitosamente')
     }
+  } catch (err: any) {
+      console.error('Error al guardar reporte:', err)
+  }
 }
 
 

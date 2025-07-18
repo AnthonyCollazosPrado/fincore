@@ -5,20 +5,21 @@
     <div class="p-10 mt-[67px]">
 
       <div class="bg-purple-fincore rounded-t-xl p-5">
-        <h1 class="m-0 text-white text-3xl font-bold">Prospectos</h1>
+        <h1 class="m-0 text-white text-2xl font-bold inline-block">Prospectos</h1>
+        <Button type="button" :disabled="guardando" class="bg-skyblue-fincore float-right" @click="router.visit('/prospectos/prospecto')">
+          {{ guardando ? 'Navegando...' : 'Nuevo prospecto' }}
+        </Button>
       </div>
       
       <div class="inset-ring inset-ring-gray-100 rounded-t-none rounded-b-xl p-5">
         <div class="text-center">
-          <Button type="button" :disabled="guardando" class="bg-skyblue-fincore" @click="router.visit('/prospectos/prospecto')">
-            {{ guardando ? 'Navegando...' : 'Nuevo prospecto' }}
-          </Button>
+
         </div>
         <div class="w-full">
           <div class="flex items-center py-4">
             <Input
               class="max-w-sm"
-              placeholder="Filter rucs..."
+              placeholder="Filtrar Por RUC..."
               :model-value="table.getColumn('ruc')?.getFilterValue() as string"
               @update:model-value=" table.getColumn('ruc')?.setFilterValue($event)"
             />
@@ -230,7 +231,27 @@ const columns: ColumnDef<Prospecto>[] = [
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }, () => ['RUC', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
-    cell: ({ row }) => h('div', { class: '' }, row.getValue('ruc')),
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('ruc')),
+  },
+  {
+    accessorKey: 'dni',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['DNI', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('dni')),
+  },
+  {
+    accessorKey: 'ce',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['CE', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('ce')),
   },
   {
     accessorKey: 'business_name',
@@ -240,7 +261,17 @@ const columns: ColumnDef<Prospecto>[] = [
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }, () => ['Razón Social', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
-    cell: ({ row }) => h('div', { class: '' }, row.getValue('business_name')),
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('business_name')),
+  },
+  {
+    accessorKey: 'nombre',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Nombre', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('nombre')),
   },
   {
     accessorKey: 'tipo',
@@ -250,7 +281,7 @@ const columns: ColumnDef<Prospecto>[] = [
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }, () => ['Producto', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
-    cell: ({ row }) => h('div', { class: '' }, row.getValue('tipo')),
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('tipo')),
   },
   {
     accessorKey: 'address',
@@ -260,7 +291,17 @@ const columns: ColumnDef<Prospecto>[] = [
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }, () => ['Dirección', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
-    cell: ({ row }) => h('div', { class: '' }, row.getValue('address')),
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('address')),
+  },
+  {
+    accessorKey: 'email',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Correo', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'ps-[12px]' }, row.getValue('email')),
   },
   /* {
     accessorKey: 'amount',
@@ -293,7 +334,17 @@ const columns: ColumnDef<Prospecto>[] = [
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
-const columnVisibility = ref<VisibilityState>({})
+//const columnVisibility = ref<VisibilityState>({})
+const columnVisibility = ref<VisibilityState>({
+  ruc: true,
+  dni: true,
+  ce: true,
+  business_name: true,
+  nombre: true,
+  tipo: true,
+  address: false,
+  email: false,
+})
 const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
 

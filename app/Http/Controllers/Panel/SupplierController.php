@@ -32,7 +32,7 @@ class SupplierController extends Controller{
         $data['registration_date'] = now();
         $id = Supplier::create($data);
         return response()->json([
-            'message' => 'Supplier created successfully',
+            'message' => 'Supplier creado satisfactoriamente.',
             'data' => $id
         ], 201);
     }

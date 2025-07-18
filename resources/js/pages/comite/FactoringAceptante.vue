@@ -6,7 +6,7 @@
       <div id="divParaCopiar" class="mt-10">
 
       <div class="bg-purple-fincore rounded-t-xl p-5">
-        <h1 class="m-0 text-white text-3xl font-bold inline-block">Comité Factoring Aceptante(s)</h1>
+        <h1 class="m-0 text-white text-2xl font-bold inline-block">Comité Factoring Aceptante(s)</h1>
       </div>
       
       <div class="inset-ring inset-ring-gray-100 rounded-t-none rounded-b-xl p-5">
@@ -79,7 +79,7 @@
           <FormItem class="col-span-2">
             <FormLabel class="block">Protestos Si o No</FormLabel>
             <FormControl>
-              <Input type="number" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" v-model="item.cuenta_con_protestos" />
+              <Input type="number" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" disabled v-model="item.cuenta_con_protestos" />
             </FormControl>
           </FormItem>
         </FormField>
@@ -186,7 +186,7 @@
                 <h3 class="m-0 text-purple-fincore text-xl font-bold">Comentarios</h3>
               </div>
 
-              <FormField name="comentarios_area_riesgos" v-slot="{ componentField }">
+              <!-- <FormField name="comentarios_area_riesgos" v-slot="{ componentField }">
                 <FormItem class="col-span-2 md:col-span-4 lg:col-span-6 mb-4">
                   <FormLabel class="block">Comentarios Área de Riesgos</FormLabel>
                   <FormControl>
@@ -218,10 +218,11 @@
                     <Textarea rows="4" class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField"  v-model="prospecto[0].comentarios_area_operaciones" />
                   </FormControl>
                 </FormItem>
-              </FormField>
+              </FormField> -->
             </div>
 
             <div class="col-span-2">
+              <!-- 
 
               <div class="border-b border-gray-100 py-3 col-span-2 md:col-span-4 lg:col-span-6 mb-4">
                 <h3 class="m-0 text-purple-fincore text-xl font-bold">Parametros Sugeridos</h3>
@@ -246,6 +247,7 @@
                   </FormControl>
                 </FormItem>
               </FormField>
+            -->
             </div>
 
 

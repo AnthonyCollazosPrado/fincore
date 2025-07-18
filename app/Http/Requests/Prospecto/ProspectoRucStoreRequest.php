@@ -29,6 +29,7 @@ class ProspectoRucStoreRequest extends FormRequest
 
             'dni'                                  => ['nullable', 'string'], //tony
             'ce'                                   => ['nullable', 'string'], //tony
+            'tipo'                                 => ['nullable', 'string'], //tony
             'nombre'                               => ['nullable', 'string'], //tony
             'fecha_nacimiento'                     => ['nullable', 'date'], //tony
             'sexo'                                 => ['nullable', 'string'], //tony
