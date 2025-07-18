@@ -12,7 +12,8 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('Dashboard');
+        //return Inertia::render('Dashboard');
+        return redirect()->route('prospectos');
     })->name('dashboard');
     /*Route::get('/prospectos', function () {
         return Inertia::render('prospecto/Index');
@@ -26,11 +27,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
-    Route::get('/prospectos', [ProspectoController::class, 'index'])->name('prospecto');
+    Route::get('/prospectos', [ProspectoController::class, 'index'])->name('prospectos');
     Route::prefix('prospectos')->group(function () {
-        Route::get('/prospecto', [ProspectoController::class, 'prospecto'])->name('prospecto.reporte');
-        Route::get('/prospecto/reporte/{id}', [ProspectoController::class, 'reporte'])->name('prospecto.reporte');
-        Route::get('/prospecto/aceptante/{id}', [ProspectoController::class, 'aceptante'])->name('prospecto.aceptante');
+        Route::get('/prospecto', [ProspectoController::class, 'prospecto'])->name('prospectos.prospecto');
+        Route::get('/prospecto/reporte/{id}', [ProspectoController::class, 'reporte'])->name('prospectos.reporte');
+        Route::get('/prospecto/aceptante/{id}', [ProspectoController::class, 'aceptante'])->name('prospectos.aceptante');
     });
 
     Route::get('/comite', [ComiteController::class, 'index'])->name('comite');
