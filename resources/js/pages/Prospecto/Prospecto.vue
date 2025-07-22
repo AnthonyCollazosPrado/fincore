@@ -103,4 +103,6 @@ watch(tipoProductoElegido, (val) => {
   if (tipoProductoElegido.value == 'Confirming') tipoDocumento.value = ['RUC']
   mostrarTipoProducto.value = true
 })
+
+
 </script>

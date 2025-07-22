@@ -133,7 +133,12 @@
                 <FormLabel class="block">Tasa Esperada (%)</FormLabel>
                 <FormControl>
                   <div class="relative">
-                    <Input class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
+                    <Input 
+                      type="text"
+                      :value="inputValue"
+                      @blur="formatearMonedaFinal"
+                      @input="formatearMonedaFinal"
+                      class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
                     <span class="absolute inset-y-0 right-8 flex items-center text-gray-400 text-sm">%</span>
                   </div>
                 </FormControl>
@@ -342,7 +347,8 @@ const formSchema = toTypedSchema(z.object({
   sales_executive: z.string().min(1, 'Requerido'),
   contact_person: z.string().optional(),
   position: z.string().optional(),
-  expected_rate: z.coerce.number().optional(),
+  //expected_rate: z.coerce.number().optional(),
+  expected_rate: z.string().optional(),
   commission: z.coerce.number().optional(),
   notes: z.string().optional(),
   dni: z.string().optional(), //tony
@@ -573,4 +579,55 @@ const guardarProspecto = handleSubmit(async (formData) => {
     guardando.value = false
   }
 })
+
+/*
+const valor = ref('')
+
+// Permite números, punto y coma al escribir
+const soloNumerosComaPunto = (event: KeyboardEvent) => {
+  const key = event.key
+  const permitido = /[0-9.,]/.test(key)
+
+  if (!permitido) {
+    event.preventDefault()
+  }
+}
+
+// Limpia caracteres inválidos si el usuario pega contenido
+const limpiarValor = () => {
+  valor.value = valor.value.replace(/[^0-9.,]/g, '')
+}
+*/
+const inputValue = ref('')
+
+watch(() => values.expected_rate, (nuevoValor) => {
+  if (nuevoValor !== null && nuevoValor !== undefined) {
+    inputValue.value = nuevoValor.toString()
+  } else {
+    inputValue.value = ''
+  }
+}, { immediate: true })
+const formatearMonedaFinal = () => {
+  const raw = inputValue.value.replace(',', '.').replace(/[^\d.-]/g, '')
+  const parsed = parseFloat(raw)
+
+  if (!isNaN(parsed)) {
+    setFieldValue('expected_rate', parsed)
+
+    inputValue.value = new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: 'PEN',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(parsed)
+  } else {
+    setFieldValue('expected_rate', 0)
+    inputValue.value = new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: 'PEN',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(0)
+  }
+}
 </script>
