@@ -76,7 +76,7 @@
               <FormItem>
                 <FormLabel class="block">Nombre Comercial</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" disabled v-bind="componentField" />
+                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
                 </FormControl>
                 <p v-if="componentField.errorMessage" class="text-red-600 text-sm mt-1">
                   {{ componentField.errorMessage }}
@@ -118,7 +118,7 @@
               <FormItem>
                 <FormLabel class="block">Actividad Económica</FormLabel>
                 <FormControl>
-                  <Input class="w-full shadow-none rounded-lg border-gray-200" disabled v-bind="componentField" />
+                  <Input class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -128,7 +128,7 @@
         
             
 
-            <FormField name="expected_rate" v-slot="{ componentField }">
+            <!-- <FormField name="expected_rate" v-slot="{ componentField }">
               <FormItem>
                 <FormLabel class="block">Tasa Esperada (%)</FormLabel>
                 <FormControl>
@@ -143,13 +143,27 @@
                   </div>
                 </FormControl>
               </FormItem>
+            </FormField> -->
+
+            <FormField name="expected_rate" v-slot="{ componentField }">
+              <FormItem>
+                <FormLabel class="block">Tasa Esperada (%)</FormLabel>
+                <FormControl>
+                  <div class="relative">
+                    <Input 
+                      type="number"
+                      class="w-full shadow-none rounded-lg border-gray-200" v-bind="componentField" />
+                    <span class="absolute inset-y-0 right-8 flex items-center text-gray-400 text-sm">%</span>
+                  </div>
+                </FormControl>
+              </FormItem>
             </FormField>
             
             <FormField name="commission" v-slot="{ componentField }">
               <FormItem>
                 <FormLabel class="block">Comisión (%)</FormLabel>
                 <FormControl>
-                  <Input v-model="commissionFormatted" class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
+                  <Input class="w-full shadow-none rounded-lg border-gray-200" type="number" v-bind="componentField" />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -348,7 +362,7 @@ const formSchema = toTypedSchema(z.object({
   contact_person: z.string().optional(),
   position: z.string().optional(),
   //expected_rate: z.coerce.number().optional(),
-  expected_rate: z.string().optional(),
+  expected_rate: z.number().optional(),
   commission: z.coerce.number().optional(),
   notes: z.string().optional(),
   dni: z.string().optional(), //tony
@@ -395,6 +409,8 @@ const consultarRuc = async () => {
 
   try {
     const { data } = await axios.get(`/api/consultas/ruc/${values.ruc}`)
+
+    console.log(data)
 
     if (!data || Object.keys(data).length === 0) {
       toast.error('RUC no encontrado o no existe')
@@ -607,6 +623,7 @@ watch(() => values.expected_rate, (nuevoValor) => {
     inputValue.value = ''
   }
 }, { immediate: true })
+/*
 const formatearMonedaFinal = () => {
   const raw = inputValue.value.replace(',', '.').replace(/[^\d.-]/g, '')
   const parsed = parseFloat(raw)
@@ -629,5 +646,5 @@ const formatearMonedaFinal = () => {
       maximumFractionDigits: 2
     }).format(0)
   }
-}
+}*/
 </script>
